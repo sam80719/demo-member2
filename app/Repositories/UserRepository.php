@@ -1,18 +1,22 @@
 <?php
 
 
-namespace App\Repository;
+namespace App\Repositories;
 
 
-use App\Exceptions\AuthExceptions\DuplicateException;
-use App\Facades\Observers\UserBehaviorObserver;
-use App\Facades\SyncService;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-class UserRepository
+class UserRepository extends Repository
 {
+
+
+    public function __construct(User $model)
+    {
+        parent::__construct($model);
+    }
+
     public function create(array $userData): User
     {
         try {

@@ -22,7 +22,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::prefix('v1')->group(function(){
 //    Route::get('member/test',[\App\Http\Controllers\Api\v1\UserCon::class,'test']);
-    Route::post('member/add',[UserController::class,'store']);
+    Route::post('member/add',[UserController::class,'mailRegister']);
 //    Route::post('/verify', 'Api\V1\EmailAuthController@verify');
     Route::middleware('auth.jwt')->group(function(){
         Route::put('member/update/{id)', [UserController::class,'edit']);

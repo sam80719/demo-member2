@@ -13,10 +13,36 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
+use Illuminate\Support\Facades\Validator;
+
 class UserController extends BaseController
 {
 
     public static $cryptSalt = 'heyhey';
+
+
+    public function mailRegister(Request $request)
+    {
+
+        $rules = [
+            'email' => 'required|email',
+            'password' => 'required',
+            'password_confirm' => 'required|same:password',
+        ];
+
+        $validator = Validator::make($request->all(),$rules);
+        if($validator->fails()){
+            return \response()->json(array("code" => 400,
+                "msg" => $validator->errors()->toJson()
+            ));
+        }
+
+        app::make(UserService::class)->testUser();
+
+
+
+
+    }
 
 
     /**
@@ -69,10 +95,7 @@ class UserController extends BaseController
         }
 
 
-
         $request['password'] = Hash::make(config('auth.password_hash'));
-
-
 
 
 //        $checkCode = $this->generateEmailActivationCode($request['email'], Carbon::now());
@@ -90,10 +113,10 @@ class UserController extends BaseController
 
         try {
 
-            User::create( [
+            User::create([
                 'email' => $request['email'],
                 'password' => $request['password'],
-            ] );
+            ]);
             DB::commit();
 
         } catch (\Exception $e) {
@@ -162,16 +185,15 @@ class UserController extends BaseController
     }
 
 
-
     public function generateEmailActivationCode(string $email, string $updatedAt): string
     {
 
         $separator = ';';
 
 
-        $expireAt = Carbon::now()->addDays( 7)->timestamp;
+        $expireAt = Carbon::now()->addDays(7)->timestamp;
         $memberData = [
-            'email'=> $email,
+            'email' => $email,
             'updatedAt' => crypt(
                 Carbon::createFromFormat('Y-m-d H:i:s', $updatedAt)->timestamp,
                 self::$cryptSalt
@@ -191,7 +213,8 @@ class UserController extends BaseController
     protected function sendMail(
         string $email,
         string $updatedAt
-    ):void{
+    ): void
+    {
         $checkCode = $this->generateEmailActivationCode($email, $updatedAt);
 
 
@@ -244,7 +267,6 @@ class UserController extends BaseController
 //                )
 //            );
 //        }
-
 
 
     }
