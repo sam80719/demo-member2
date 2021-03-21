@@ -18,6 +18,7 @@ class UserService
 {
     protected $userRepo;
     public static $cryptSalt = 'heyhey';
+    public const EXPIRED_DAY = 7;
 
 
     public function __construct(UserRepository $userRepo)
@@ -29,15 +30,15 @@ class UserService
     private function registerAndLoginDate(Request $request): array
     {
         $request['password'] = Hash::make(config('auth.password_hash'));
-        $checkCode = $this->generateEmailActivationCode($request['email'], Carbon::now());
-
-        var_dump($checkCode);
+        $verifyToken = app::make(AuthService::class)->tokenEncode($request['email'], static::EXPIRED_DAY);
+        $test = app::make(AuthService::class)->tokenDecode($verifyToken);
+        var_dump($test);
         exit;
         return [
             'email' => $request['email'],
             'password' => $request['password'],
+            'verifyToken' => $verifyToken,
         ];
-
     }
 
     public static $emailVerifyMapping = [
