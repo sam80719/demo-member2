@@ -23,6 +23,7 @@ class DropUsersTable extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('users');
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');

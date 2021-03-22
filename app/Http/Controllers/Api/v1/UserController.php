@@ -35,10 +35,7 @@ class UserController extends BaseController
                 "msg" => $validator->errors()->toJson()
             ));
         }
-
-        app::make(UserService::class)->createUser($request);
-
-
+        return app::make(UserService::class)->createUser($request);
     }
 
 

@@ -13,15 +13,16 @@ class ReCreateUsersTable extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('users');
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->default('')->comment('姓名');
-            $table->string('email')->index();
-            $table->string('password');
-            $table->string('verifyToken')->nullable()->comment('驗證token');
+            $table->string('email')->index()->comment('信箱');
+            $table->string('password')->comment('密碼');
+            $table->text('verify_token')->nullable()->comment('驗證token');
             $table->timestamp('email_verified_at')->nullable();
-            $table->tinyInteger('isToken')->default(0)->comment('是否驗證token');
-            $table->tinyInteger('isOauth')->default(0)->comment('是否有使用oauth');
+            $table->tinyInteger('is_token')->default(0)->comment('是否驗證token');
+            $table->tinyInteger('is_oauth')->default(0)->comment('是否有使用oauth');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -34,8 +35,9 @@ class ReCreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('users');
+//        Schema::table('users', function (Blueprint $table) {
+//            //
+//        });
     }
 }
