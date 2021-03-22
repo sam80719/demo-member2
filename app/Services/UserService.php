@@ -8,11 +8,13 @@ use App\Models\User;
 use App\Repositories\UserRepository;
 use Carbon\Carbon;
 
+use Facade\Ignition\Exceptions\ViewExceptionWithSolution;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Mail;
 
 class UserService
 {
@@ -51,20 +53,12 @@ class UserService
     public function createUser(Request $request)
     {
         try {
-
-
             $formDate = $this->registerAndLoginDate($request);
-
             $repo = app::make(UserRepository::class);
-             $repo->create($formDate);
-
-
-////
-
+//            $repo->create($formDate);
 
             // todo send_mail
-//        $this->sendMail($request['email'], Carbon::now());
-
+            $this->sendMail($formDate['email'],$formDate['verify_token']);
 
             $data = array(
                 "code" => 200,
@@ -82,44 +76,26 @@ class UserService
     }
 
 
-    public function generateEmailActivationCode(string $email, string $updatedAt): string
+    public function sendMail($mail,$token)
     {
-        $a = encrypt(123);
-        echo $a;
-        echo "\n";
-        echo decrypt($a);
-        exit;
-
-        $separator = ';';
+        try {
 
 
-        $expireAt = Carbon::now()->addDays(7)->timestamp;
-        $memberData = [
-            'email' => $email,
-            'updatedAt' => crypt(
-                Carbon::createFromFormat('Y-m-d H:i:s', $updatedAt)->timestamp,
-                self::$cryptSalt
-            ),
-            'expireAt' => base64_encode($expireAt)
-        ];
+            $link = sprintf('%s', route('api.member.verify') . '?token=' . $token);
+            $text = "連結為： ".$link;
 
-        var_dump($memberData);
-        var_dump(implode($separator, array_map('base64_encode', array_keys($memberData))));
-        var_dump(implode($separator, array_values($memberData)));
+            Mail::raw($text, function($msg) use ($mail){
+                $msg->to($mail)->subject('test');
+            });
 
 
-        $checkCode = sprintf(
-            '%s$%s',
-            implode($separator, array_map('base64_encode', array_keys($memberData))),
-            implode($separator, array_values($memberData))
-        );
+            exit;
 
-        var_dump($checkCode);
+        } catch (\Exception $e) {
+            throw $e;
+        }
 
-        exit;
-        return $checkCode;
     }
-
 
 
 }

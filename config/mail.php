@@ -107,4 +107,8 @@ return [
         ],
     ],
 
+    'member_active_url' => '/verify/',
+
+
+
 ];
