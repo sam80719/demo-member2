@@ -5,6 +5,7 @@ namespace App\Repositories;
 
 
 use App\Models\User;
+use Carbon\Carbon;
 use http\Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -30,7 +31,7 @@ class UserRepository extends Repository
                 ->whereNull('deleted_at')
                 ->get()->toArray();
 
-            if (!empty($result))  throw new \Exception("duplicate email");
+            if (!empty($result)) throw new \Exception("duplicate email");
 
 
             User::create([
@@ -40,6 +41,32 @@ class UserRepository extends Repository
             ]);
             DB::commit();
             return 'add success';
+        } catch (\Exception $e) {
+            DB::rollback();
+            throw $e;
+        }
+    }
+
+
+    public function verifyByMail(array $userData, string $token)
+    {
+        DB::beginTransaction();
+        try {
+
+            $result = DB::table('users')
+                ->where('email', '=', $userData['mail'])
+                ->first();
+
+            if (empty($result)) throw new \Exception("member not fund");
+            if ($result->verify_token !== $token) throw new \Exception("token is not exist");
+
+
+            User::where('email', $userData['mail'])
+                ->update([
+                    'email_verified_at' => Carbon::now()
+                ]);
+            DB::commit();
+            return 'verify success';
         } catch (\Exception $e) {
             DB::rollback();
             throw $e;

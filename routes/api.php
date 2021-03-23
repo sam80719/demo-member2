@@ -28,7 +28,7 @@ Route::prefix('member/v1')->group(function () {
 //        \Mail::to('abc@abc.com')->send(new \App\Mail\MyTestMail());
 //    });
     Route::post('register', [UserController::class, 'mailRegister']);
-    Route::post('verify', [UserController::class, 'verifyMail'])->name('api.member.verify');
+    Route::get('verify', [UserController::class, 'verifyMail'])->name('api.member.verify');
     Route::post('login', [LoginController::class, 'store']);
     Route::middleware('auth.jwt')->group(function () {
         Route::put('update/{id)', [UserController::class, 'edit']);

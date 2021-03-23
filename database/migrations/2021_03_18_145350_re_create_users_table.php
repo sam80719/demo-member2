@@ -21,7 +21,6 @@ class ReCreateUsersTable extends Migration
             $table->string('password')->comment('密碼');
             $table->text('verify_token')->nullable()->comment('驗證token');
             $table->timestamp('email_verified_at')->nullable();
-            $table->tinyInteger('is_token')->default(0)->comment('是否驗證token');
             $table->tinyInteger('is_oauth')->default(0)->comment('是否有使用oauth');
             $table->timestamps();
             $table->softDeletes();

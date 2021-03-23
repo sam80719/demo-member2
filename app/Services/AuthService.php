@@ -23,9 +23,29 @@ class AuthService
     }
 
 
-    public function handleHeader(Request $request)
+    public function handlePostHeader(Request $request)
     {
-        if ($request->header()['content-type'][0] !== 'application/json' || empty($request->all()) || !is_array($request->all())) {
+
+        if ($request->header()['content-type'][0] !== 'application/json' ||
+            empty($request->all()) ||
+            !is_array($request->all()) ||
+            $request->method() !== 'POST'
+        ) {
+            return \response()->json(array("code" => 400,
+                "msg" => "bad request"
+            ));
+        }
+        return true;
+    }
+
+
+    public function handleGetHeader(Request $request)
+    {
+
+        if (empty($request->all()) ||
+            !is_array($request->all()) ||
+            $request->method() !== 'GET'
+        ) {
             return \response()->json(array("code" => 400,
                 "msg" => "bad request"
             ));

@@ -31,11 +31,11 @@ class UserService
 
     private function registerAndLoginDate(Request $request): array
     {
+        $request['email'] = strip_tags($request['email']);
+        $request['password'] = strip_tags($request['password']);
         $request['password'] = Hash::make(config('auth.password_hash'));
         $verifyToken = app::make(AuthService::class)->tokenEncode($request['email'], static::EXPIRED_DAY);
-//        $test = app::make(AuthService::class)->tokenDecode($verifyToken);
-//        var_dump($test);
-//        exit;
+
         return [
             'email' => $request['email'],
             'password' => $request['password'],
@@ -57,7 +57,7 @@ class UserService
             $repo = app::make(UserRepository::class);
             $repo->create($formDate);
 
-            // todo 會寄送兩封信件，需要實作mutex或queue 避免發送相同的信件
+            // todo 未來使用queue，避免堵塞
             $this->sendMail($formDate['email'], $formDate['verify_token']);
 
             $data = array(
@@ -69,8 +69,26 @@ class UserService
             return \response()->json(array("code" => 400,
                 "msg" => $e->getMessage()
             ));
+        }
+    }
 
 
+    public function verifyMailToken($token)
+    {
+        try {
+            $formData = app::make(AuthService::class)->tokenDecode($token);
+            $repo = app::make(UserRepository::class);
+            $repo->verifyByMail($formData, $token);
+
+            $data = array(
+                "code" => 200,
+                "msg" => '驗證成功'
+            );
+            return response(json_encode($data), Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            return \response()->json(array("code" => 400,
+                "msg" => $e->getMessage()
+            ));
         }
     }
 
@@ -78,28 +96,12 @@ class UserService
     public function sendMail($mail, $token)
     {
         try {
-
-
             $link = sprintf('%s', route('api.member.verify') . '?token=' . $token);
-            $text = "連結為： " . $link;
-
-            \Mail::to($mail)->send(new \App\Mail\MyTestMail($link));
-//            Mail::raw($text, function($msg) use ($mail){
-//                $msg->to($mail)->subject('test');
-//            });
-
             Mail::to($mail)->send(new MyTestMail($link));
-            exit;
-
+            return true;
         } catch (\Exception $e) {
             throw $e;
         }
-
-    }
-
-
-    public function testMail()
-    {
     }
 
 

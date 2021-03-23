@@ -22,7 +22,7 @@ class UserController extends BaseController
     //  docker-compose exec laravel.test  curl --request POST -H "Content-Type: application/json" --data '{"email":"sam80719@gmail.com", "password":123456, "password_confirm":123456}' "http:/127.0.0.1/api/member/v1/register"
     public function mailRegister(Request $request)
     {
-        app::make(AuthService::class)->handleHeader($request);
+        app::make(AuthService::class)->handlePostHeader($request);
 
         $rules = [
             'email' => 'required|email',
@@ -39,8 +39,11 @@ class UserController extends BaseController
     }
 
 
-    public function verifyMail(){
-
+    public function verifyMail(Request $request)
+    {
+        app::make(AuthService::class)->handleGetHeader($request);
+        $token = strip_tags($request->input('token'));
+        return app::make(UserService::class)->verifyMailToken($token);
     }
 
 
