@@ -9,13 +9,12 @@ use App\Models\User;
 use App\Repositories\UserRepository;
 use Carbon\Carbon;
 
-use Facade\Ignition\Exceptions\ViewExceptionWithSolution;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Mail;
+
 
 class UserService
 {
@@ -56,10 +55,10 @@ class UserService
         try {
             $formDate = $this->registerAndLoginDate($request);
             $repo = app::make(UserRepository::class);
-//            $repo->create($formDate);
+            $repo->create($formDate);
 
-            // todo send_mail
-            $this->sendMail($formDate['email'],$formDate['verify_token']);
+            // todo 會寄送兩封信件，需要實作mutex或queue 避免發送相同的信件
+            $this->sendMail($formDate['email'], $formDate['verify_token']);
 
             $data = array(
                 "code" => 200,
@@ -67,7 +66,6 @@ class UserService
             );
             return response(json_encode($data), Response::HTTP_CREATED);
         } catch (\Exception $e) {
-
             return \response()->json(array("code" => 400,
                 "msg" => $e->getMessage()
             ));
@@ -77,14 +75,15 @@ class UserService
     }
 
 
-    public function sendMail($mail,$token)
+    public function sendMail($mail, $token)
     {
         try {
 
 
             $link = sprintf('%s', route('api.member.verify') . '?token=' . $token);
-            $text = "連結為： ".$link;
+            $text = "連結為： " . $link;
 
+            \Mail::to($mail)->send(new \App\Mail\MyTestMail($link));
 //            Mail::raw($text, function($msg) use ($mail){
 //                $msg->to($mail)->subject('test');
 //            });
@@ -99,7 +98,9 @@ class UserService
     }
 
 
-    public function testMail(){}
+    public function testMail()
+    {
+    }
 
 
 }
