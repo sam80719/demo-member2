@@ -4,6 +4,7 @@
 namespace App\Services;
 
 
+use App\Mail\MyTestMail;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Carbon\Carbon;
@@ -84,11 +85,11 @@ class UserService
             $link = sprintf('%s', route('api.member.verify') . '?token=' . $token);
             $text = "連結為： ".$link;
 
-            Mail::raw($text, function($msg) use ($mail){
-                $msg->to($mail)->subject('test');
-            });
+//            Mail::raw($text, function($msg) use ($mail){
+//                $msg->to($mail)->subject('test');
+//            });
 
-
+            Mail::to($mail)->send(new MyTestMail($link));
             exit;
 
         } catch (\Exception $e) {
@@ -96,6 +97,9 @@ class UserService
         }
 
     }
+
+
+    public function testMail(){}
 
 
 }

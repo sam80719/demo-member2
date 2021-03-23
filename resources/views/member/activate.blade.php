@@ -8,11 +8,11 @@
     <p style="margin-bottom:28px;color:#4a4a4a;font-size: 16px;letter-spacing: 0.2px;">
         請點選下方連結確認您的帳戶，以便完成wowo帳戶的建立流程。
     </p>
-    <a href="{{$link}}"
-       style="width: 260px; display: block;padding: 10px 0;margin: 0 auto;text-align: center;color:#fff;background-color: #e86c4f;font-size: 15px;text-decoration: none;"
-       target="_blank">
-        認證帳戶
-    </a>
+{{--    <a href="{{$link}}"--}}
+{{--       style="width: 260px; display: block;padding: 10px 0;margin: 0 auto;text-align: center;color:#fff;background-color: #e86c4f;font-size: 15px;text-decoration: none;"--}}
+{{--       target="_blank">--}}
+{{--        認證帳戶--}}
+{{--    </a>--}}
     <p style="width: 45%;margin: 27px auto 5px;text-align: center;border-bottom: 1px solid #e86c4f;line-height: 0.1em;color:#e86c4f;">
         <span style="position:relative; top: 5px;padding:0 15px;background: #fff;">提醒您!</span>
     </p>

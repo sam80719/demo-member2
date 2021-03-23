@@ -11,12 +11,12 @@ class MyTestMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $params;
-
-    public function __construct($params)
-    {
-        $this->params = $params;
-    }
+//    public $params;
+//
+//    public function __construct($params)
+//    {
+//        $this->params = $params;
+//    }
 
 
 
@@ -37,12 +37,14 @@ class MyTestMail extends Mailable
 //                   route('api.member.verify')
 //                ),
 //            ]);
-        return $this->subject("警告訊息")
-            ->view('member.activate')
-            ->subject('確認您的帳戶')
-            ->with([
-                'link' => $this->params,
-            ]);
+
+        return $this->from('example@example.com')->view('member.activate');
+//        return $this->subject("警告訊息")
+//            ->view('member.activate')
+//            ->subject('確認您的帳戶')
+//            ->with([
+//                'link' => $this->params,
+//            ]);
 
 
     }
