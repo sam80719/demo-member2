@@ -104,5 +104,32 @@ class UserService
         }
     }
 
+    public function selectUser(Request $request){
+        try{
+
+            $formDate = $this->registerAndLoginDate($request);
+            $repo = app::make(UserRepository::class);
+
+
+
+
+        }catch (\Exception $e) {
+            return \response()->json(array("code" => 400,
+                "msg" => $e->getMessage()
+            ));
+        }
+
+    }
+
+
+    protected function createNewToken($token){
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60,
+            'user' => auth()->user()
+        ]);
+    }
+
 
 }

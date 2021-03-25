@@ -3,8 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\v1\UserController;
-use App\Http\Controllers\Api\v1\VerifyController;
 use App\Http\Controllers\Api\v1\LoginController;
+use App\Http\Controllers\Auth\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,22 +17,14 @@ use App\Http\Controllers\Api\v1\LoginController;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-
-Route::prefix('member/v1')->group(function () {
-
-//    Route::get('sendMail', function () {
-//        \Mail::to('abc@abc.com')->send(new \App\Mail\MyTestMail());
-//    });
-    Route::post('register', [UserController::class, 'mailRegister']);
-    Route::get('verify', [UserController::class, 'verifyMail'])->name('api.member.verify');
-    Route::post('login', [LoginController::class, 'store']);
-    Route::middleware('auth.jwt')->group(function () {
-        Route::put('update/{id)', [UserController::class, 'edit']);
-        Route::delete('delete/{id}', [UserController::class, 'destroy']);
-        Route::get('list', [UserController::class, 'index']);
-    });
+Route::group([
+    'middleware' => 'api',
+    'prefix' => 'auth'
+], function ($router) {
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/verify', [AuthController::class, 'verifyMail'])->name('api.member.verify');;
+    Route::post('/register', [AuthController::class, 'mailRegister']);
+        Route::put('update/{id)', [AuthController::class, 'edit']);
+        Route::delete('delete/{id}', [AuthController::class, 'destroy']);
+        Route::get('list', [AuthController::class, 'index']);
 });
