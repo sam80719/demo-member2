@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
     public function __construct() {
-        $this->middleware('auth:api', ['except' => ['login', 'mailRegister', 'verifyMail']]);
+//        $this->middleware('auth:api', ['except' => ['login', 'mailRegister', 'verifyMail','editMember']]);
     }
 
 
@@ -76,19 +76,23 @@ class AuthController extends Controller
      */
     public function index()
     {
-        //
+
+
+
+        return app::make(UserService::class)->list();
     }
 
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    // docker-compose exec laravel.test  curl --request PUT -X "Content-Type: application/json" --data '{"email":"sam807129@gmail.com"}' "http:/127.0.0.1/api/auth/update/2"
+    public function editMember(Request $request,$id)
     {
-        //
+
+
+        echo '<pre>';
+        var_dump($id);
+
+        var_dump($request);
+        exit;
     }
 
 

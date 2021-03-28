@@ -129,13 +129,12 @@ class UserService
             );
 
 
-
             return response(json_encode($data), Response::HTTP_OK);
         } catch (\Exception $e) {
             if ($e->getMessage() === 'user is not valid') {
-                return \response()->json(array("code" =>  Response::HTTP_BAD_REQUEST,
+                return \response()->json(array("code" => Response::HTTP_BAD_REQUEST,
                     "msg" => $e->getMessage()
-                ),    Response::HTTP_UNAUTHORIZED );
+                ), Response::HTTP_UNAUTHORIZED);
             }
 
             return \response()->json(array("code" => 400,
@@ -161,12 +160,23 @@ class UserService
 //                var_dump('The passwords is not match..');
 //            }
 
-            if($request['password'] !== decrypt($userData->password)) throw new \Exception("wrong password");
+            if ($request['password'] !== decrypt($userData->password)) throw new \Exception("wrong password");
 
         } catch (\Exception $e) {
             throw $e;
         }
 
+    }
+
+
+    public function list()
+    {
+        try {
+            $repo = app::make(UserRepository::class);
+            return $repo->list();
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
 

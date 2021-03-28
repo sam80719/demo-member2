@@ -84,9 +84,22 @@ class UserRepository extends Repository
             if (empty($result)) throw new \Exception("member not fund");
             return $result;
         } catch (\Exception $e) {
-
             throw $e;
         }
+    }
+
+
+    public function list()
+    {
+        try {
+            $result = DB::table('users')
+                ->get()->toArray();
+            return $result;
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+
     }
 
 

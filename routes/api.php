@@ -18,13 +18,13 @@ use App\Http\Controllers\Auth\AuthController;
 */
 
 Route::group([
-    'middleware' => 'api',
+//    'middleware' => 'api',
     'prefix' => 'auth'
 ], function ($router) {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/verify', [AuthController::class, 'verifyMail'])->name('api.member.verify');;
     Route::post('/register', [AuthController::class, 'mailRegister']);
-        Route::put('update/{id)', [AuthController::class, 'edit']);
-        Route::delete('delete/{id}', [AuthController::class, 'destroy']);
-        Route::get('list', [AuthController::class, 'index']);
+    Route::put('/update/{id)', [AuthController::class, 'editMember']);
+    Route::delete('/delete/{id}', [AuthController::class, 'destroy']);
+    Route::get('/list', [AuthController::class, 'index']);
 });
