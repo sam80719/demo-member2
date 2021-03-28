@@ -44,6 +44,10 @@ class AuthController extends Controller
         return app::make(UserService::class)->verifyMailToken($token);
     }
 
+
+
+    // docker-compose exec laravel.test  curl --request POST -H "Content-Type: application/json" --data '{"email":"sam80719@gmail.com", "password":123456, "password_confirm":123456}' "http:/127.0.0.1/api/auth/login"
+
     public function login(Request $request){
 
         app::make(AuthService::class)->handlePostHeader($request);

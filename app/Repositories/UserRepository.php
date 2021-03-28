@@ -75,10 +75,14 @@ class UserRepository extends Repository
     }
 
 
-    public function store()
+    public function storeByEmail($request)
     {
         try {
-
+            $result = DB::table('users')
+                ->where('email', '=', $request['email'])
+                ->first();
+            if (empty($result)) throw new \Exception("member not fund");
+            return $result;
         } catch (\Exception $e) {
 
             throw $e;

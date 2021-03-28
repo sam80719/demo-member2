@@ -10,6 +10,7 @@ use App\Repositories\UserRepository;
 use Carbon\Carbon;
 
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -29,19 +30,30 @@ class UserService
     }
 
 
-    private function registerAndLoginDate(Request $request): array
+    private function registerDate(Request $request): array
     {
-        $request['email'] = strip_tags($request['email']);
+
         $request['password'] = strip_tags($request['password']);
         $request['password'] = Hash::make($request['password']);
         $verifyToken = app::make(AuthService::class)->tokenEncode($request['email'], static::EXPIRED_DAY);
 
         return [
-            'email' => $request['email'],
+            'email' => strip_tags($request['email']),
             'password' => $request['password'],
             'verify_token' => $verifyToken,
         ];
     }
+
+
+    private function loginDate(Request $request): array
+    {
+        return [
+            'email' => strip_tags($request['email']),
+            'password' => strip_tags($request['password']),
+
+        ];
+    }
+
 
     public static $emailVerifyMapping = [
         'cognitoId' => 'id',
@@ -53,7 +65,7 @@ class UserService
     public function createUser(Request $request)
     {
         try {
-            $formDate = $this->registerAndLoginDate($request);
+            $formDate = $this->registerDate($request);
             $repo = app::make(UserRepository::class);
             $repo->create($formDate);
 
@@ -108,13 +120,20 @@ class UserService
     {
         try {
 
-            $formDate = $this->registerAndLoginDate($request);
+            $formDate = $this->loginDate($request);
 
-            $this->checkUser($request);
-            $repo = app::make(UserRepository::class);
+
+            $this->checkUser($formDate);
+//            $repo = app::make(UserRepository::class);
 
 
         } catch (\Exception $e) {
+            if ($e->getMessage() === 'user is not valid') {
+                return \response()->json(array("code" => 400,
+                    "msg" => $e->getMessage()
+                ), 401);
+            }
+
             return \response()->json(array("code" => 400,
                 "msg" => $e->getMessage()
             ));
@@ -128,7 +147,27 @@ class UserService
         try {
             $repo = app::make(UserRepository::class);
 
-            $userData = $repo->store($request);
+            $userData = $repo->storeByEmail($request);
+
+
+            if (empty($userData->email_verified_at)) throw new \Exception("user is not valid");
+
+
+            echo '<pre>';
+            var_dump($request['password']);
+            var_dump($userData->password);
+            exit;
+
+            if (Auth::check($request['password'], $userData->password)) {
+                var_dump(111);
+            } else {
+                var_dump(222);
+            }
+            exit;
+            echo '<pre>';
+            var_dump($request);
+            var_dump($userData);
+            exit;
 
 
         } catch (\Exception $e) {
