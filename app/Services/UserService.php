@@ -33,7 +33,7 @@ class UserService
     {
         $request['email'] = strip_tags($request['email']);
         $request['password'] = strip_tags($request['password']);
-        $request['password'] = Hash::make(config('auth.password_hash'));
+        $request['password'] = Hash::make($request['password']);
         $verifyToken = app::make(AuthService::class)->tokenEncode($request['email'], static::EXPIRED_DAY);
 
         return [
@@ -104,16 +104,17 @@ class UserService
         }
     }
 
-    public function selectUser(Request $request){
-        try{
+    public function selectUser(Request $request)
+    {
+        try {
 
             $formDate = $this->registerAndLoginDate($request);
+
+            $this->checkUser($request);
             $repo = app::make(UserRepository::class);
 
 
-
-
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return \response()->json(array("code" => 400,
                 "msg" => $e->getMessage()
             ));
@@ -122,7 +123,23 @@ class UserService
     }
 
 
-    protected function createNewToken($token){
+    public function checkUser($request)
+    {
+        try {
+            $repo = app::make(UserRepository::class);
+
+            $userData = $repo->store($request);
+
+
+        } catch (\Exception $e) {
+            throw $e;
+        }
+
+    }
+
+
+    protected function createNewToken($token)
+    {
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',

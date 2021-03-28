@@ -53,15 +53,16 @@ class UserRepository extends Repository
         DB::beginTransaction();
         try {
 
+
             $result = DB::table('users')
-                ->where('email', '=', $userData['mail'])
+                ->where('email', '=', $userData['email'])
                 ->first();
 
             if (empty($result)) throw new \Exception("member not fund");
             if ($result->verify_token !== $token) throw new \Exception("token is not exist");
 
 
-            User::where('email', $userData['mail'])
+            User::where('email', $userData['email'])
                 ->update([
                     'email_verified_at' => Carbon::now()
                 ]);
@@ -69,6 +70,17 @@ class UserRepository extends Repository
             return 'verify success';
         } catch (\Exception $e) {
             DB::rollback();
+            throw $e;
+        }
+    }
+
+
+    public function store()
+    {
+        try {
+
+        } catch (\Exception $e) {
+
             throw $e;
         }
     }

@@ -86,15 +86,17 @@ class AuthService
         $page = $arrDeToken[3]; // 目前沒用來控制
         $number = count($arrDeToken);
 
+
         // 無效的token
         if ($source !== config('auth.api_source')) return ["status" => false, "msg" => 'illegal token source'];
         if ($number < 3) return ["status" => false, "msg" => 'illegal token format'];
+
 
         if ($expiredTime) {
             if (Carbon::parse($expiredTime)->gt(Carbon::now())) {
                 $mail = decrypt($member);
                 return [
-                    "mail" => $mail,
+                    "email" => $mail,
                     "route" => $page
                 ];
             }
@@ -103,15 +105,5 @@ class AuthService
         return ["status" => false, "msg" => 'illegal token format'];
     }
 
-    public function updateToken(string $verify_token, string $member_id)
-    {
-        $members = new Member();
-        $members->member_id = $member_id;
-        $members->verify_token = $verify_token;
-        $members->is_send = 1;
-        $members->is_token = 0;
-        $members->upduser = $member_id;
-        $memberDao = MkDIC::make(MemberDao::class);
-        return $memberDao->update($members);
-    }
+
 }
