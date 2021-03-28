@@ -63,9 +63,12 @@ class AuthController extends Controller
             ));
         }
 
+
 //
-//        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('email', 'password');
 //        $token = auth()->attempt($credentials);
+//        $token = auth()->user();
+//        echo '<pre>';
 //        var_dump($credentials);
 //        var_dump($token);
 //        exit;

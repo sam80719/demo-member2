@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Mail;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 class UserService
@@ -118,7 +119,12 @@ class UserService
     {
         try {
             $formDate = $this->loginDate($request);
-            $this->checkUser($formDate);
+            $userData = $this->checkUser($formDate);
+            $token = auth()->login($userData);
+
+            echo '<pre>';
+            var_dump($token);
+            exit;
             $data = array(
                 "code" => 200,
                 "msg" => '登入成功'
@@ -160,6 +166,7 @@ class UserService
 
             if ($request['password'] !== decrypt($userData->password)) throw new \Exception("wrong password");
 
+            return $userData;
         } catch (\Exception $e) {
             throw $e;
         }
