@@ -33,8 +33,10 @@ class UserService
     private function registerDate(Request $request): array
     {
 
-        $request['password'] = strip_tags($request['password']);
-        $request['password'] = Hash::make($request['password']);
+//        $request['password'] = strip_tags($request['password']);
+//        $request['password'] = Hash::make(strval($request['password']));
+        $request['password'] = encrypt(strip_tags($request['password']));
+
         $verifyToken = app::make(AuthService::class)->tokenEncode($request['email'], static::EXPIRED_DAY);
 
         return [
@@ -70,7 +72,7 @@ class UserService
             $repo->create($formDate);
 
             // todo 未來使用queue，避免堵塞
-            $this->sendMail($formDate['email'], $formDate['verify_token']);
+//            $this->sendMail($formDate['email'], $formDate['verify_token']);
 
             $data = array(
                 "code" => 200,
@@ -98,7 +100,7 @@ class UserService
             );
             return response(json_encode($data), Response::HTTP_CREATED);
         } catch (\Exception $e) {
-            return \response()->json(array("code" => 400,
+            return \response()->json(array("code" => Response::HTTP_BAD_REQUEST,
                 "msg" => $e->getMessage()
             ));
         }
@@ -119,19 +121,21 @@ class UserService
     public function selectUser(Request $request)
     {
         try {
-
             $formDate = $this->loginDate($request);
-
-
             $this->checkUser($formDate);
-//            $repo = app::make(UserRepository::class);
+            $data = array(
+                "code" => 200,
+                "msg" => '登入成功'
+            );
 
 
+
+            return response(json_encode($data), Response::HTTP_OK);
         } catch (\Exception $e) {
             if ($e->getMessage() === 'user is not valid') {
-                return \response()->json(array("code" => 400,
+                return \response()->json(array("code" =>  Response::HTTP_BAD_REQUEST,
                     "msg" => $e->getMessage()
-                ), 401);
+                ),    Response::HTTP_UNAUTHORIZED );
             }
 
             return \response()->json(array("code" => 400,
@@ -149,26 +153,15 @@ class UserService
 
             $userData = $repo->storeByEmail($request);
 
-
             if (empty($userData->email_verified_at)) throw new \Exception("user is not valid");
 
+//            if (Auth::check($request['password'], $userData->password)) {
+//                var_dump('The passwords match..');
+//            } else {
+//                var_dump('The passwords is not match..');
+//            }
 
-            echo '<pre>';
-            var_dump($request['password']);
-            var_dump($userData->password);
-            exit;
-
-            if (Auth::check($request['password'], $userData->password)) {
-                var_dump(111);
-            } else {
-                var_dump(222);
-            }
-            exit;
-            echo '<pre>';
-            var_dump($request);
-            var_dump($userData);
-            exit;
-
+            if($request['password'] !== decrypt($userData->password)) throw new \Exception("wrong password");
 
         } catch (\Exception $e) {
             throw $e;

@@ -16,8 +16,7 @@ class AuthController extends Controller
     }
 
 
-    //  docker-compose exec laravel.test  curl --request POST -H "Content-Type: application/json" --data '{"email":"sam80719@gmail.com", "password":123456, "password_confirm":123456}' "http:/127.0.0.1/api/auth/register"
-
+    //  docker-compose exec laravel.test  curl --request POST -H "Content-Type: application/json" --data '{"email":"sam80719@gmail.com", "password":"abs123456", "password_confirm":"abs123456"}' "http:/127.0.0.1/api/auth/register"
     public function mailRegister(Request $request)
     {
         app::make(AuthService::class)->handlePostHeader($request);
@@ -46,7 +45,7 @@ class AuthController extends Controller
 
 
 
-    // docker-compose exec laravel.test  curl --request POST -H "Content-Type: application/json" --data '{"email":"sam80719@gmail.com", "password":123456, "password_confirm":123456}' "http:/127.0.0.1/api/auth/login"
+    // docker-compose exec laravel.test  curl --request POST -H "Content-Type: application/json" --data '{"email":"sam80719@gmail.com", "password":"abs123456"}' "http:/127.0.0.1/api/auth/login"
 
     public function login(Request $request){
 
