@@ -2,8 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\v1\UserController;
-use App\Http\Controllers\Api\v1\LoginController;
+
 use App\Http\Controllers\Auth\AuthController;
 
 /*
@@ -18,13 +17,16 @@ use App\Http\Controllers\Auth\AuthController;
 */
 
 Route::group([
-//    'middleware' => 'api',
+    'middleware' => 'api',
     'prefix' => 'auth'
 ], function ($router) {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/verify', [AuthController::class, 'verifyMail'])->name('api.member.verify');;
     Route::post('/register', [AuthController::class, 'mailRegister']);
-    Route::put('/update/{id)', [AuthController::class, 'editMember']);
-    Route::delete('/delete/{id}', [AuthController::class, 'destroy']);
+
     Route::get('/list', [AuthController::class, 'index']);
+
+
+    Route::put('/update/{$id)', [AuthController::class, 'editMember']);
+    Route::delete('/delete/{$id}', [AuthController::class, 'destroy']);
 });

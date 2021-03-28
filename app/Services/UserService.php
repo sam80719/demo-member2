@@ -57,11 +57,7 @@ class UserService
     }
 
 
-    public static $emailVerifyMapping = [
-        'cognitoId' => 'id',
-        'updatedAt' => 'uTime',
-        'expireAt' => 'eTime'
-    ];
+
 
 
     public function createUser(Request $request)
@@ -129,6 +125,7 @@ class UserService
             );
 
 
+
             return response(json_encode($data), Response::HTTP_OK);
         } catch (\Exception $e) {
             if ($e->getMessage() === 'user is not valid') {
@@ -151,6 +148,7 @@ class UserService
             $repo = app::make(UserRepository::class);
 
             $userData = $repo->storeByEmail($request);
+
 
             if (empty($userData->email_verified_at)) throw new \Exception("user is not valid");
 

@@ -11,8 +11,9 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function __construct() {
-//        $this->middleware('auth:api', ['except' => ['login', 'mailRegister', 'verifyMail','editMember']]);
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['login', 'mailRegister', 'verifyMail','editMember']]);
     }
 
 
@@ -44,10 +45,10 @@ class AuthController extends Controller
     }
 
 
-
     // docker-compose exec laravel.test  curl --request POST -H "Content-Type: application/json" --data '{"email":"sam80719@gmail.com", "password":"abs123456"}' "http:/127.0.0.1/api/auth/login"
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
 
         app::make(AuthService::class)->handlePostHeader($request);
 
@@ -62,11 +63,44 @@ class AuthController extends Controller
             ));
         }
 
+//
+//        $credentials = $request->only('email', 'password');
+//        $token = auth()->attempt($credentials);
+//        var_dump($credentials);
+//        var_dump($token);
+//        exit;
+////        if (! $token = auth()->attempt($credentials)) {
+////            return response()->json(['error' => 'Unauthorized'], 401);
+////        }
+//
+//        return $this->respondWithToken($token);
+
         return app::make(UserService::class)->selectUser($request);
 
 
     }
 
+
+    public function me()
+    {
+        return response()->json(auth()->user());
+    }
+
+
+    public function refresh()
+    {
+        return $this->respondWithToken(auth()->refresh());
+    }
+
+
+    protected function respondWithToken($token)
+    {
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60
+        ]);
+    }
 
 
     /**
@@ -76,34 +110,27 @@ class AuthController extends Controller
      */
     public function index()
     {
-
-
-
         return app::make(UserService::class)->list();
     }
 
 
     // docker-compose exec laravel.test  curl --request PUT -X "Content-Type: application/json" --data '{"email":"sam807129@gmail.com"}' "http:/127.0.0.1/api/auth/update/2"
-    public function editMember(Request $request,$id)
+    public function editMember(Request $request, $id)
     {
-
-
         echo '<pre>';
         var_dump($id);
-
         var_dump($request);
         exit;
     }
 
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+
+    public function destroy(Request $request,$id)
     {
-        //
+        echo '<pre>';
+        var_dump($id);
+        var_dump(3333);
+        var_dump($request);
+        exit;
     }
 }

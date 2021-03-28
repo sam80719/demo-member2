@@ -93,6 +93,7 @@ class UserRepository extends Repository
     {
         try {
             $result = DB::table('users')
+                ->whereNull('deleted_at')
                 ->get()->toArray();
             return $result;
         } catch (\Exception $e) {
